@@ -1,0 +1,53 @@
+const game = document.getElementById("game");
+const sound = document.getElementById("flipSound");
+
+const symbols = ["🌸","🌸","⚡","⚡","🧠","🧠","🔥","🔥","💎","💎","🌙","🌙"];
+
+symbols.sort(() => Math.random() - 0.5);
+
+let first = null;
+let second = null;
+let lock = false;
+
+symbols.forEach(symbol => {
+  const card = document.createElement("div");
+  card.classList.add("card");
+  card.dataset.symbol = symbol;
+  card.innerText = "";
+
+  card.addEventListener("click", () => {
+    if (lock || card.classList.contains("flipped")) return;
+
+    card.classList.add("flipped");
+    card.innerText = symbol;
+
+    sound.currentTime = 0;
+    sound.play();
+
+    if (!first) {
+      first = card;
+      return;
+    }
+
+    second = card;
+    lock = true;
+
+    if (first.dataset.symbol === second.dataset.symbol) {
+      first = null;
+      second = null;
+      lock = false;
+    } else {
+      setTimeout(() => {
+        first.classList.remove("flipped");
+        second.classList.remove("flipped");
+        first.innerText = "";
+        second.innerText = "";
+        first = null;
+        second = null;
+        lock = false;
+      }, 700);
+    }
+  });
+
+  game.appendChild(card);
+});
